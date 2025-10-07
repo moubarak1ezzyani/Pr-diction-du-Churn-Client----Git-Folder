@@ -1,0 +1,1 @@
+# Ce fichier est conçu pour : des tests unitaires automatisés (test_pipeline.py) pour valider la propreté et la cohérence des données
