@@ -21,7 +21,7 @@ import os
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 csv_path = os.path.join(project_root, 'data', 'raw', 'ChurnDataFile.csv')
 Data_File=pds.read_csv(csv_path)
-print(Data_File)
+# print(Data_File)
 
 #Infos Generales
 Data_File_Info=Data_File.info()
