@@ -10,8 +10,10 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, classification_report
-from sklearn.tree import DecisionTreeClassifier 
+from sklearn.metrics import accuracy_score, classification_report, recall_score, f1_score, roc_curve, auc, precision_recall_curve
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+
 
 
 def load_data():
@@ -115,18 +117,30 @@ def Prepare_To_Training(Data_File):
     print(f"Distribution des classes dans y_test \n {Y_test.value_counts(normalize=True)}")
     return X_train, X_test, Y_train, Y_test
     
-		# ---------> entraînement des modèles
-def Training_Model():
-    
-    model = DecisionTreeClassifier(random_state=42)
-    X_train, X_test, Y_train, Y_test= Prepare_To_Training(Data_File)
-    model.fit(X_train, Y_train)
-    Y_prediction =model.predict(X_test)
-    Accuracy = accuracy_score(Y_test, Y_prediction)
-    print(f"\nPrécision (Accuracy) sur l'ensemble de test: {Accuracy:.2f}")
-    print("\nRapport de classification:\n", classification_report(Y_test, Y_prediction))
 
-print("===== Check Training =====")
-print(Training_Model())
+
+		# ---------> entraînement des modèles
+def Training_Model(X_train, X_test, Y_train, Y_test):   
+    models = {
+        'Logistic Regression': LogisticRegression(),
+        'Random Forest': RandomForestClassifier()
+    }
+    for name in models:
+        models[name].fit(X_train, Y_train)
+    return models
+
+
+def comp_models(model, X_test, Y_test):
+    Y_prediction =model.predict(X_test)
+    print("\nRapport de classification:\n", classification_report(Y_test, Y_prediction))
+    return {
+        "accuracy" : accuracy_score(Y_test, Y_prediction),
+        "recall" : recall_score(Y_test, Y_prediction),
+        "F1-score" : f1_score(Y_test, Y_prediction),
+        "ROC" : roc_curve(Y_test, Y_prediction),
+        "PR_Curve" : precision_recall_curve
+    }
+X_train, X_test, Y_train, Y_test = Prepare_To_Training(Data_File)
+Trained_Model = Training_Model(X_train, Y_train)
 
 
