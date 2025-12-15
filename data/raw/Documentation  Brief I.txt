@@ -1,0 +1,46 @@
+Brief N° : 1
+Nom Complet : Prédiction du Churn Client (désabonnement)– Projet Data Science
+
+
+Période :
+	De : 06 Oct 2025
+	au : 10 Oct 2025
+
+Projet & Composants : 
+
+--> Notebook Jupyter : 
+		- EDA	(info();	head();	shape();	duplicated();	describe();	values_counts())
+		- visualisations
+		- premières analyses (Analyse Univarié, Bivarié)
+		- présentation des résultats intermédiaires
+
+--> Pipeline : 
+		- Fonctions de préparation des données
+		- encodage 
+		- normalisation
+		- split Train/Test
+		- entraînement des modèles
+
+--> Test Pipeline : 
+		- Absence de valeurs manquantes
+		- Dimensions cohérentes entre X et y après split
+		- Types de colonnes corrects après transformation
+		
+--> Une comparaison/Evaluation des modèles avec métriques clés  : 
+		- accuracy
+		- recall
+		- F1-score
+		- ROC
+		- PR_Curve
+
+--> Jira : 
+		- Créer la tâche principale du projet
+		- Diviser en sous-tâches (EDA, Préparation, Modélisation, Évaluation, Rapport)
+		- Établir le calendrier de développement sur 5 jours
+	
+
+    
+    
+		    
+    
+    
