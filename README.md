@@ -25,7 +25,7 @@ L'objectif est de développer un pipeline de Machine Learning supervisé capable
 │   └── raw/
 │       └── ChurnDataFile.csv    # Données sources (Ne jamais modifier directement)
 ├── notebooks/
-│   └── lab.ipynb                # Notebook Jupyter : Exploration (EDA) et brouillon
+│   └── NoteBookJupyter.ipynb                # Notebook Jupyter : Exploration (EDA) et brouillon
 ├── src/
 │   ├── pipeline.py              # Pipeline complet : Préparation, Entraînement, Évaluation
 │   └── test_pipeline.py         # Tests unitaires (pytest) pour valider le pipeline
