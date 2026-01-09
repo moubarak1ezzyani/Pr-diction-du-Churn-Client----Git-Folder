@@ -1,4 +1,4 @@
-# 📡 Prédiction du Churn Client (Télécommunications)
+# 📡 Telecom Churn AI
 
 ![Python](https://img.shields.io/badge/Python-3.x-blue)
 ![Scikit-Learn](https://img.shields.io/badge/Library-Scikit--Learn-orange)
