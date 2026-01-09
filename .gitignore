@@ -1,4 +1,5 @@
-ChurnEnvr/
+ChurnVenv/
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
+data/raw/DocumentationBriefI.txt
