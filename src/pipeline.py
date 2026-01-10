@@ -7,44 +7,41 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report, f1_score, recall_score, roc_auc_score
 
+# --- loading data & handle paths
 def load_data(filepath="./data/raw/ChurnDataFile.csv"):
-    """Charge les données depuis un fichier CSV."""
-    # Permet de gérer les chemins relatifs que l'on lance depuis src ou la racine
     if not os.path.exists(filepath):
-        # Tentative de remonter d'un cran si lancé depuis src/
         filepath = os.path.join("..", filepath)
         
     if not os.path.exists(filepath):
-        raise FileNotFoundError(f"Fichier introuvable : {filepath}")
+        raise FileNotFoundError(f"DataFile Not Found : {filepath}")
         
     df = pd.read_csv(filepath)
-    print(f"✅ Données chargées : {df.shape}")
+    print(f"Data loaded successfully. : {df.shape}")
     return df
 
+# --- clean & encode/normalize data.
 def preprocess_data(df):
-    """Nettoie, encode et normalise les données."""
-    df = df.copy() # Pour ne pas modifier l'original
+    df = df.copy() 
     
-    # 1. Conversion TotalCharges (Force numérique)
+    # -> [TotalCharges] --> numeric 
     df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce')
     df['TotalCharges'].fillna(df['TotalCharges'].mean(), inplace=True)
     
-    # 2. Suppression des colonnes inutiles (ID)
+    # -> Drop irrelevant cols
     if 'customerID' in df.columns:
         df = df.drop(columns=['customerID'])
         
-    # 3. Encodage binaire de la cible (Churn)
+    # -> Binary encode target : Churn
     if 'Churn' in df.columns:
         df['Churn'] = df['Churn'].map({'Yes': 1, 'No': 0})
         
-    # 4. Encodage des variables catégorielles (LabelEncoder)
-    # Note: En production réelle, on préfère OneHotEncoder ou sauvegarder le LabelEncoder
+    # -> Encode categorica features - LabelEncoder
     categorical_cols = df.select_dtypes(include=['object']).columns
-    le = LabelEncoder()
+    le = LabelEncoder()     # production : OneHotEncoder 
     for col in categorical_cols:
         df[col] = le.fit_transform(df[col])
         
-    # 5. Normalisation (MinMax) sur les colonnes numériques (sauf la cible)
+    # -> MinMax scaling
     target = None
     if 'Churn' in df.columns:
         target = df['Churn']
@@ -53,14 +50,13 @@ def preprocess_data(df):
     scaler = MinMaxScaler()
     df_scaled = pd.DataFrame(scaler.fit_transform(df), columns=df.columns)
     
-    # On remet la cible si elle existait
     if target is not None:
-        df_scaled['Churn'] = target.reset_index(drop=True)
+        df_scaled['Churn'] = target.reset_index(drop=True)      # Restore target (if present)
         
     return df_scaled
 
+# --- splitting data
 def split_data(df, target_col='Churn', test_size=0.2):
-    """Divise le dataset en Train et Test sets."""
     X = df.drop(columns=[target_col])
     y = df[target_col]
     
@@ -69,8 +65,8 @@ def split_data(df, target_col='Churn', test_size=0.2):
     )
     return X_train, X_test, y_train, y_test
 
+# --- training data
 def train_models(X_train, y_train):
-    """Entraîne plusieurs modèles."""
     models = {
         'LogisticRegression': LogisticRegression(max_iter=1000),
         'RandomForest': RandomForestClassifier(random_state=42)
@@ -80,12 +76,12 @@ def train_models(X_train, y_train):
     for name, model in models.items():
         model.fit(X_train, y_train)
         trained_models[name] = model
-        print(f"🤖 Modèle entraîné : {name}")
+        print(f"Model Trained : {name}")
         
     return trained_models
 
+# --- Evaluate model & performance metrics
 def evaluate_model(model, X_test, y_test):
-    """Évalue un modèle et retourne les métriques."""
     y_pred = model.predict(X_test)
     
     metrics = {
@@ -94,7 +90,7 @@ def evaluate_model(model, X_test, y_test):
         "f1_score": f1_score(y_test, y_pred),
     }
     
-    # Gestion du ROC AUC qui a besoin de probabilités
+    # Handle ROC AUC - proba scores
     try:
         y_proba = model.predict_proba(X_test)[:, 1]
         metrics["roc_auc"] = roc_auc_score(y_test, y_proba)
@@ -103,33 +99,30 @@ def evaluate_model(model, X_test, y_test):
         
     return metrics
 
-# ==========================================
-# Zone d'exécution principale (Main)
-# ==========================================
-if __name__ == "__main__":
-    # Cette partie ne s'exécute QUE si tu lances "python pipeline.py"
-    # Elle ne s'exécute PAS si tu fais "import pipeline"
-    
+# =======================
+# Main execution block
+# =======================
+if __name__ == "__main__":      # pyhton pipeline.py
     try:
-        # 1. Chargement
+        # -> loading data
         df = load_data()
         
-        # 2. Préparation
+        # -> cleaning 
         df_clean = preprocess_data(df)
         
-        # 3. Split
+        # -> Split
         X_train, X_test, y_train, y_test = split_data(df_clean)
         print(f"Training set: {X_train.shape}, Test set: {X_test.shape}")
         
-        # 4. Entraînement
+        # -> training 
         models = train_models(X_train, y_train)
         
-        # 5. Évaluation et Choix
-        print("\n📊 RÉSULTATS :")
+        # -> Evaluation & Selection
+        print("\nResults :")
         for name, model in models.items():
             res = evaluate_model(model, X_test, y_test)
             print(f"--- {name} ---")
             print(res)
             
     except Exception as e:
-        print(f"❌ Erreur : {e}")
+        print(f"ERROR : {e}")
